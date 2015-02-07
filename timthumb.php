@@ -297,7 +297,7 @@ function valid_src_mime_type($mime_type) {
 /**
  * check if the url is valid
  */
-function valid_extension ($ext) {
+function valid_extension($ext) {
 
     if (preg_match("/jpg|jpeg|png|gif/i", $ext)) {
         return true;
