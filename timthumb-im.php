@@ -188,14 +188,14 @@ function save_image($mime_type, $src, $dest, $new_width, $new_height, $zoom_crop
 
         $trans = ($mime_type == 'image/png' || $mime_type == 'image/gif') ? ' -background none' : '';
 
-        $resize = ($cmp_x > $cmp_y) ? 'x{$new_height}' : '{$new_width}';
+        $resize = ($cmp_x > $cmp_y) ? "x{$new_height}" : $new_width;
 
-        $crop = ($zoom_crop) ? '{$resize} -gravity {$gravity} -extent {$new_width}x{$new_height}!' : '{$new_width}x{$new_height}!';
+        $crop = ($zoom_crop) ? "{$resize} -gravity {$gravity} -extent {$new_width}x{$new_height}!" : "{$new_width}x{$new_height}!";
 
-        $jpg = ($mime_type == 'image/jpeg') ? ' -compress JPEG -define jpeg:optimize-coding=true -quality {$quality}%' : '';
+        $jpg = ($mime_type == 'image/jpeg') ? " -compress JPEG -define jpeg:optimize-coding=true -quality {$quality}%" : '';
 
         // limits in bytes: 160mb and 128mb
-        exec(K_IMAGEMAGICK_PATH.' -limit memory 167772160 -limit map 134217728 -format {$format}{$trans} {$src} -thumbnail {$crop}{$jpg} {$dest}');
+        exec(K_IMAGEMAGICK_PATH . " -limit memory 167772160 -limit map 134217728 -format {$format}{$trans} {$src} -thumbnail {$crop}{$jpg} {$dest}");
     }
 
 }
