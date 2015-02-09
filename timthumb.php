@@ -1,10 +1,10 @@
 <?php
 /*
+    https://github.com/cheesypoof/CouchCMS-ImageMagick-Resizer
+
     Modified from the original source of TimThumb script created by Tim McDaniels and Darren Hoyt.
     Original license reproduced below.
-*/
 
-/*
     TimThumb script created by Tim McDaniels and Darren Hoyt with tweaks by Ben Gillbanks
     http://code.google.com/p/timthumb/
 
@@ -159,8 +159,23 @@ function k_resize_image($src, $dest = 0, $new_width = 0, $new_height = 0, $zoom_
             $dest = $thumbnail;
         }
 
-        // output image to browser based on mime type
-        save_image($mime_type, $src, $dest, $new_width, $new_height, $zoom_crop, $quality, $gravity, $cmp_x, $cmp_y);
+        if (@touch($dest)) {
+            // give 666 permissions so that the developer can overwrite web server user
+            @chmod($dest, 0666);
+
+            $format = ($mime_type == 'image/jpeg') ? 'jpg' : (($mime_type = 'image/png') ? 'png' : 'gif');
+
+            $transparent = ($format == 'png' || $format == 'gif') ? ' -background none' : '';
+
+            $resize = ($cmp_x > $cmp_y) ? "x{$new_height}" : $new_width;
+
+            $crop = ($zoom_crop) ? "{$resize} -gravity {$gravity} -extent {$new_width}x{$new_height}!" : "{$new_width}x{$new_height}!";
+
+            $jpg = ($format == 'jpg') ? " -compress JPEG -define jpeg:optimize-coding=true -quality {$quality}%" : '';
+
+            // limits in bytes: 160 MB and 128 MB
+            exec(K_IMAGEMAGICK_PATH . " -limit memory 167772160 -limit map 134217728 -format {$format}{$transparent} {$src} -thumbnail {$crop}{$jpg} {$dest}");
+        }
 
         return $thumb_name;
     } else {
@@ -178,24 +193,20 @@ function k_resize_image($src, $dest = 0, $new_width = 0, $new_height = 0, $zoom_
 /**
  * save image
  */
-function save_image($mime_type, $src, $dest, $new_width, $new_height, $zoom_crop, $quality, $gravity, $cmp_x, $cmp_y) {
+function save_image($mime_type, $image_resized, $file, $quality = 80) {
 
-    if (@touch($dest)) {
+    if (@touch($file)) {
         // give 666 permissions so that the developer can overwrite web server user
-        @chmod($dest, 0666);
+        @chmod($file, 0666);
 
-        $format = ($mime_type == 'image/jpeg') ? 'jpg' : (($mime_type = 'image/png') ? 'png' : 'gif');
-
-        $trans = ($mime_type == 'image/png' || $mime_type == 'image/gif') ? ' -background none' : '';
-
-        $resize = ($cmp_x > $cmp_y) ? "x{$new_height}" : $new_width;
-
-        $crop = ($zoom_crop) ? "{$resize} -gravity {$gravity} -extent {$new_width}x{$new_height}!" : "{$new_width}x{$new_height}!";
-
-        $jpg = ($mime_type == 'image/jpeg') ? " -compress JPEG -define jpeg:optimize-coding=true -quality {$quality}%" : '';
-
-        // limits in bytes: 160mb and 128mb
-        exec(K_IMAGEMAGICK_PATH . " -limit memory 167772160 -limit map 134217728 -format {$format}{$trans} {$src} -thumbnail {$crop}{$jpg} {$dest}");
+        switch ($mime_type) {
+            case 'image/jpeg':
+                imagejpeg($image_resized, $file, $quality);
+                break;
+            default:
+                $quality = floor($quality * 0.09);
+                imagepng($image_resized, $file, $quality);
+        }
     }
 
 }
