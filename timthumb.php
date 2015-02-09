@@ -163,7 +163,7 @@ function k_resize_image($src, $dest = 0, $new_width = 0, $new_height = 0, $zoom_
             // give 666 permissions so that the developer can overwrite web server user
             @chmod($dest, 0666);
 
-            $format = ($mime_type == 'image/jpeg') ? 'jpg' : (($mime_type = 'image/png') ? 'png' : 'gif');
+            $format = ($mime_type == 'image/jpeg') ? 'jpg' : (($mime_type == 'image/png') ? 'png' : 'gif');
 
             $transparent = ($format == 'png' || $format == 'gif') ? ' -background none' : '';
 
