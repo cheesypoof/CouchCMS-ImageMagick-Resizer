@@ -1,6 +1,6 @@
-# CouchCMS ImageMagick Resizer
+# [CouchCMS](http://www.couchcms.com/) ImageMagick Resizer
 
-This is a replacement for the [TimThumb](http://www.binarymoon.co.uk/projects/timthumb/) image resizer script included in [CouchCMS](http://www.couchcms.com/). The excellent [ImageMagick](http://www.imagemagick.org/) engine is used (binary - not Imagick PHP Library), resulting in higher quality resized images (compared to the [GD Graphics Library](https://libgd.github.io/)).
+This is a replacement for the default [TimThumb](http://www.binarymoon.co.uk/projects/timthumb/) image resizer script. The excellent [ImageMagick](http://www.imagemagick.org/) engine is used (binary - not Imagick PHP Library), resulting in higher quality resized images (compared to the [GD Graphics Library](https://libgd.github.io/)).
 
 ## Requirements
 Your host must have a recent version of ImageMagick installed and allow PHP's `exec` function. This script works fully with ImageMagick `6.4.8` and later. Compatibility may extend to earlier versions but has not been tested.
